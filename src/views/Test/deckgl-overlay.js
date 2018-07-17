@@ -19,7 +19,7 @@ export default class DeckGLOverlay extends Component {
       new ScatterplotLayer({
         id: "scatterplot",
         getPosition: d => d.position,
-        getColor: d => (d.pickup ? PICKUP_COLOR : DROPOFF_COLOR),
+        getColor: d => (d.altitude > 800 ? PICKUP_COLOR : DROPOFF_COLOR),
         getRadius: d => 3,
         opacity: 0.5,
         pickable: false,

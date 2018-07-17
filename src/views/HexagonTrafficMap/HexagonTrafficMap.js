@@ -6,7 +6,7 @@ import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
 import taxiData from "./taxi";
 
-class Test extends Component {
+class HexagonTrafficMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -133,4 +133,4 @@ class Test extends Component {
   }
 }
 
-export default Test;
+export default HexagonTrafficMap;
