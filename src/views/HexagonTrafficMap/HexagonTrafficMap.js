@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { defaultMapStyle, pointLayer } from "./map-style.js";
 import axios from "axios";
+import moment from "moment";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
@@ -16,7 +17,7 @@ class HexagonTrafficMap extends Component {
         height: window.innerHeight,
         longitude: -0.350713,
         latitude: 51.444,
-        zoom: 11,
+        zoom: 12,
         maxZoom: 16
       }
     };
@@ -38,10 +39,28 @@ class HexagonTrafficMap extends Component {
   componentDidMount() {
     window.addEventListener("resize", this._resize);
 
+    let start = moment
+      .utc()
+      .startOf("day")
+      .unix();
+    let end = moment.utc().endOf("day").unix();
+/*     let end = moment
+      .utc()
+      .startOf("day")
+      .add(7, "hours")
+      .unix(); */
+
+    // 1531259370
+    // 1531864196
+
+    console.log(start, end);
+
     axios
-      .get(`https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/flights`)
+      .get(
+        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/all?from=${start}&to=${end}&latLonOnly=1`
+      )
       .then(res => {
-        console.log(res.data);
+        console.log(res.data.length);
         this._processDataFlights(res.data);
       })
       .catch(error => {
@@ -57,42 +76,12 @@ class HexagonTrafficMap extends Component {
     window.removeEventListener("resize", this._resize);
   }
 
-  _processData() {
-    if (taxiData) {
-      this.setState({ status: "LOADED" });
-      const points = taxiData.reduce((accu, curr) => {
-        accu.push({
-          position: [
-            Number(curr.pickup_longitude),
-            Number(curr.pickup_latitude)
-          ],
-          pickup: true
-        });
-        accu.push({
-          position: [
-            Number(curr.dropoff_longitude),
-            Number(curr.dropoff_latitude)
-          ],
-          pickup: false
-        });
-        return accu;
-      }, []);
-      this.setState({
-        points,
-        status: "READY"
-      });
-    }
-  }
-
   _processDataFlights(flights) {
     if (flights) {
       this.setState({ status: "LOADED" });
       const points = flights.reduce((accu, curr) => {
         accu.push({
-          position: [
-            Number(curr.longitude),
-            Number(curr.latitude)
-          ],
+          position: [Number(curr.longitude), Number(curr.latitude)],
           altitude: Number(curr.galtM)
         });
         return accu;

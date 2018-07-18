@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { defaultMapStyle, pointLayer } from "./map-style.js";
 import axios from "axios";
+import moment from "moment";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
@@ -38,8 +39,11 @@ class Test extends Component {
   componentDidMount() {
     window.addEventListener("resize", this._resize);
 
+    let start = moment.utc().startOf("day").unix();
+    let end = moment.utc().endOf("day").unix();
+
     axios
-      .get(`https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/flights`)
+      .get(`https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/all?from=${start}&to=${end}&latLonOnly=1`)
       .then(res => {
         console.log(res.data);
         this._processDataFlights(res.data);
@@ -55,33 +59,6 @@ class Test extends Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", this._resize);
-  }
-
-  _processData() {
-    if (taxiData) {
-      this.setState({ status: "LOADED" });
-      const points = taxiData.reduce((accu, curr) => {
-        accu.push({
-          position: [
-            Number(curr.pickup_longitude),
-            Number(curr.pickup_latitude)
-          ],
-          pickup: true
-        });
-        accu.push({
-          position: [
-            Number(curr.dropoff_longitude),
-            Number(curr.dropoff_latitude)
-          ],
-          pickup: false
-        });
-        return accu;
-      }, []);
-      this.setState({
-        points,
-        status: "READY"
-      });
-    }
   }
 
   _processDataFlights(flights) {

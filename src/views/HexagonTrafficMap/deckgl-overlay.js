@@ -40,13 +40,14 @@ export default class DeckGLOverlay extends Component {
       new HexagonLayer({
         id: "heatmap",
         elevationRange,
-        elevationScale: 0,
+        elevationScale: 3,
         extruded: true,
         opacity: 0.25,
         getPosition: d => d.position,
         lightSettings: LIGHT_SETTINGS,
         pickable: true,
-        radius: 80,
+        radius: 100,
+        //onHover: ({object}) => setTooltip(`${object.centroid.join(', ')}\nCount: ${object.points.length}`),
         ...this.props
       })
     ];
