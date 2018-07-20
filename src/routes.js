@@ -127,6 +127,11 @@ const HexagonTrafficMap = Loadable({
   loading: Loading,
 });
 
+const FlightsList = Loadable({
+  loader: () => import('./views/FlightsList'),
+  loading: Loading,
+});
+
 const Dashboard = Loadable({
   loader: () => import('./views/Dashboard'),
   loading: Loading,
@@ -237,6 +242,7 @@ const routes = [
   { path: '/charts', name: 'Charts', component: Charts },
   { path: '/test', name: 'Test', component: Test },
   { path: '/hexagonTrafficMap', name: 'HexagonTrafficMap', component: HexagonTrafficMap },
+  { path: '/flightsList', name: 'FlightsList', component: FlightsList },
   { path: '/users', exact: true,  name: 'Users', component: Users },
   { path: '/users/:id', exact: true, name: 'User Details', component: User },
 ];

@@ -166,6 +166,11 @@ export default {
       icon: 'icon-pie-chart',
     },
     {
+      name: 'FlightsList',
+      url: '/flightsList',
+      icon: 'icon-list',
+    },
+    {
       name: 'Icons',
       url: '/icons',
       icon: 'icon-star',

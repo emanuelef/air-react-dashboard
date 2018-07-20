@@ -7,16 +7,26 @@ import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
 import taxiData from "./taxi";
 
+import { tooltipStyle } from "./style";
+import { LayerControls, SCATTERPLOT_CONTROLS } from "./layer-controls";
+
 class HexagonTrafficMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      settings: Object.keys(SCATTERPLOT_CONTROLS).reduce(
+        (accu, key) => ({
+          ...accu,
+          [key]: SCATTERPLOT_CONTROLS[key].value
+        }),
+        {}
+      ),
       mapStyle: defaultMapStyle,
       viewport: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        longitude: -0.350713,
-        latitude: 51.444,
+        width: 0,
+        height: 0,
+        longitude: -0.342588,
+        latitude: 51.443874,
         zoom: 12,
         maxZoom: 16
       }
@@ -24,31 +34,22 @@ class HexagonTrafficMap extends Component {
     this._resize = this._resize.bind(this);
   }
 
-  /*   state = {
-    mapStyle: defaultMapStyle,
-    viewport: {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      latitude: 51.444,
-      longitude: -0.350713,
-      zoom: 11,
-      maxZoom: 16
-    }
-  }; */
-
-  componentDidMount() {
-    window.addEventListener("resize", this._resize);
-
+  _fetchDataFlights(daysAgo = 0) {
     let start = moment
       .utc()
+      .subtract(daysAgo, "days")
       .startOf("day")
       .unix();
-    let end = moment.utc().endOf("day").unix();
-/*     let end = moment
+    let end = moment
       .utc()
-      .startOf("day")
-      .add(7, "hours")
-      .unix(); */
+      .subtract(daysAgo, "days")
+      .endOf("day")
+      .unix();
+    /*     let end = moment
+    .utc()
+    .startOf("day")
+    .add(7, "hours")
+    .unix(); */
 
     // 1531259370
     // 1531864196
@@ -67,13 +68,18 @@ class HexagonTrafficMap extends Component {
         console.log("ERROR");
         console.log(error);
       });
+  }
 
-    //this._processData();
+  componentDidMount() {
+    window.addEventListener("resize", this._resize);
+    window.addEventListener("orientationchange", this._resize);
+    this._fetchDataFlights();
     this._resize();
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this._resize);
+    window.removeEventListener("orientationchange", this._resize);
   }
 
   _processDataFlights(flights) {
@@ -93,6 +99,10 @@ class HexagonTrafficMap extends Component {
     }
   }
 
+  _onHover({ x, y, object }) {
+    this.setState({ x, y, hoveredObject: object });
+  }
+
   _resize = () =>
     this._onViewportChange({
       width: window.innerWidth,
@@ -104,20 +114,50 @@ class HexagonTrafficMap extends Component {
       viewport: { ...this.state.viewport, ...viewport }
     });
 
+  _updateLayerSettings(settings) {
+    console.log(settings);
+    this.setState({ settings });
+    this._fetchDataFlights(settings.radiusScale);
+  }
+
   render() {
     return (
-      <ReactMapGL
-        {...this.state.viewport}
-        mapboxApiAccessToken={
-          "pk.eyJ1IjoiZW1hZnVtYSIsImEiOiJjamh1ZGVoZGowbGExM3duMDkwMnhtNDhiIn0.xgW6mtfaTEgFNw8jC6i_Yw"
-        }
-        onViewportChange={viewport => this._onViewportChange(viewport)}
+      <div
+        style={{
+          margin: "-30px"
+        }}
       >
-        <DeckGLOverlay
-          viewport={this.state.viewport}
-          data={this.state.points}
+        {this.state.hoveredObject && (
+          <div
+            style={{
+              ...tooltipStyle,
+              transform: `translate(${this.state.x + 5}px, ${this.state.y +
+                5}px)`
+            }}
+          >
+            <div>{`num: ${this.state.hoveredObject.points.length}`}</div>
+          </div>
+        )}
+        <LayerControls
+          settings={this.state.settings}
+          propTypes={SCATTERPLOT_CONTROLS}
+          onChange={settings => this._updateLayerSettings(settings)}
         />
-      </ReactMapGL>
+        <ReactMapGL
+          {...this.state.viewport}
+          mapboxApiAccessToken={
+            "pk.eyJ1IjoiZW1hZnVtYSIsImEiOiJjamh1ZGVoZGowbGExM3duMDkwMnhtNDhiIn0.xgW6mtfaTEgFNw8jC6i_Yw"
+          }
+          onViewportChange={viewport => this._onViewportChange(viewport)}
+        >
+          <DeckGLOverlay
+            viewport={this.state.viewport}
+            data={this.state.points}
+            onHover={hover => this._onHover(hover)}
+            {...this.state.settings}
+          />
+        </ReactMapGL>
+      </div>
     );
   }
 }

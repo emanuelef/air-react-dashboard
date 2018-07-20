@@ -5,13 +5,14 @@ import moment from "moment";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
-import taxiData from "./taxi";
+
+const MAPBOX_STYLE = "mapbox://styles/mapbox/dark-v9";
 
 class Test extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mapStyle: defaultMapStyle,
+      mapStyle: MAPBOX_STYLE,
       viewport: {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -39,11 +40,19 @@ class Test extends Component {
   componentDidMount() {
     window.addEventListener("resize", this._resize);
 
-    let start = moment.utc().startOf("day").unix();
-    let end = moment.utc().endOf("day").unix();
+    let start = moment
+      .utc()
+      .startOf("day")
+      .unix();
+    let end = moment
+      .utc()
+      .endOf("day")
+      .unix();
 
     axios
-      .get(`https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/all?from=${start}&to=${end}&latLonOnly=1`)
+      .get(
+        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/all?from=${start}&to=${end}&latLonOnly=1`
+      )
       .then(res => {
         console.log(res.data);
         this._processDataFlights(res.data);
@@ -66,10 +75,7 @@ class Test extends Component {
       this.setState({ status: "LOADED" });
       const points = flights.reduce((accu, curr) => {
         accu.push({
-          position: [
-            Number(curr.longitude),
-            Number(curr.latitude)
-          ],
+          position: [Number(curr.longitude), Number(curr.latitude)],
           altitude: Number(curr.galtM)
         });
         return accu;
@@ -94,18 +100,25 @@ class Test extends Component {
 
   render() {
     return (
-      <ReactMapGL
-        {...this.state.viewport}
-        mapboxApiAccessToken={
-          "pk.eyJ1IjoiZW1hZnVtYSIsImEiOiJjamh1ZGVoZGowbGExM3duMDkwMnhtNDhiIn0.xgW6mtfaTEgFNw8jC6i_Yw"
-        }
-        onViewportChange={viewport => this._onViewportChange(viewport)}
+      <div
+        style={{
+          margin: "-30px"
+        }}
       >
-        <DeckGLOverlay
-          viewport={this.state.viewport}
-          data={this.state.points}
-        />
-      </ReactMapGL>
+        <ReactMapGL
+          {...this.state.viewport}
+          mapStyle={MAPBOX_STYLE}
+          mapboxApiAccessToken={
+            "pk.eyJ1IjoiZW1hZnVtYSIsImEiOiJjamh1ZGVoZGowbGExM3duMDkwMnhtNDhiIn0.xgW6mtfaTEgFNw8jC6i_Yw"
+          }
+          onViewportChange={viewport => this._onViewportChange(viewport)}
+        >
+          <DeckGLOverlay
+            viewport={this.state.viewport}
+            data={this.state.points}
+          />
+        </ReactMapGL>
+      </div>
     );
   }
 }

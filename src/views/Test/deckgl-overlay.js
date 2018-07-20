@@ -17,22 +17,23 @@ export default class DeckGLOverlay extends Component {
       return null;
     }
 
-    let scale = chroma.scale(["white", "red"]);
-    const colourPoint = altitude => {
-      let normAltitude = altitude > 500 ? 1000 : altitude;
-      normAltitude = normAltitude < 100 ? 100 : normAltitude;
-      return scale((normAltitude - 100) / 400).rgb();
+    let scale = chroma.scale(['red', 'white']);
+
+    const colourPoint = (altitude, min = 100, max = 500) => {
+      let normAltitude = altitude > max ? max : altitude;
+      normAltitude = normAltitude < min ? min : normAltitude;
+      return scale((normAltitude - min) / (max - min)).rgb();
     };
 
     const layers = [
       new ScatterplotLayer({
         id: "scatterplot",
         getPosition: d => d.position,
-        getColor: d => colourPoint(d.altitude),
-        getRadius: d => 3,
-        opacity: 0.5,
+        getColor: d => colourPoint(d.altitude, 350, 1100),
+        getRadius: d => 8,
+        opacity: 0.2,
         pickable: false,
-        radiusScale: 5,
+        radiusScale: 10,
         radiusMinPixels: 0.25,
         radiusMaxPixels: 30,
         ...this.props
