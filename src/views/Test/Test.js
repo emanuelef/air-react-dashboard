@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { defaultMapStyle, pointLayer } from "./map-style.js";
 import axios from "axios";
 import moment from "moment";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
+
+import { tooltipStyle } from "../MapUtils/style";
 
 const MAPBOX_STYLE = "mapbox://styles/mapbox/dark-v9";
 
@@ -19,23 +20,11 @@ class Test extends Component {
         longitude: -0.350713,
         latitude: 51.444,
         zoom: 11,
-        maxZoom: 16
+        maxZoom: 18
       }
     };
     this._resize = this._resize.bind(this);
   }
-
-  /*   state = {
-    mapStyle: defaultMapStyle,
-    viewport: {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      latitude: 51.444,
-      longitude: -0.350713,
-      zoom: 11,
-      maxZoom: 16
-    }
-  }; */
 
   componentDidMount() {
     window.addEventListener("resize", this._resize);
@@ -87,6 +76,10 @@ class Test extends Component {
     }
   }
 
+  _onHover({ x, y, object }) {
+    this.setState({ x, y, hoveredObject: object });
+  }
+
   _resize = () =>
     this._onViewportChange({
       width: window.innerWidth,
@@ -105,6 +98,17 @@ class Test extends Component {
           margin: "-30px"
         }}
       >
+        {this.state.hoveredObject && (
+          <div
+            style={{
+              ...tooltipStyle,
+              transform: `translate(${this.state.x + 5}px, ${this.state.y +
+                5}px)`
+            }}
+          >
+            <div>{JSON.stringify(this.state.hoveredObject)}</div>
+          </div>
+        )}
         <ReactMapGL
           {...this.state.viewport}
           mapStyle={MAPBOX_STYLE}
@@ -116,6 +120,7 @@ class Test extends Component {
           <DeckGLOverlay
             viewport={this.state.viewport}
             data={this.state.points}
+            onHover={hover => this._onHover(hover)}
           />
         </ReactMapGL>
       </div>

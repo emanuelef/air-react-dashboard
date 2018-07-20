@@ -47,7 +47,6 @@ export default class DeckGLOverlay extends Component {
         lightSettings: LIGHT_SETTINGS,
         pickable: true,
         radius: 100,
-        //onHover: ({object}) => setTooltip(`${object.centroid.join(', ')}\nCount: ${object.points.length}`),
         ...this.props
       })
     ];

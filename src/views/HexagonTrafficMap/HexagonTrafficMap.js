@@ -1,14 +1,13 @@
 import React, { Component } from "react";
-import { defaultMapStyle, pointLayer } from "./map-style.js";
+import { defaultMapStyle, pointLayer } from "../MapUtils/map-style.js";
 import axios from "axios";
 import moment from "moment";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
-import taxiData from "./taxi";
 
-import { tooltipStyle } from "./style";
-import { LayerControls, SCATTERPLOT_CONTROLS } from "./layer-controls";
+import { tooltipStyle } from "../MapUtils/style";
+import { LayerControls, SCATTERPLOT_CONTROLS } from "../MapUtils/layer-controls";
 
 class HexagonTrafficMap extends Component {
   constructor(props) {
@@ -28,7 +27,7 @@ class HexagonTrafficMap extends Component {
         longitude: -0.342588,
         latitude: 51.443874,
         zoom: 12,
-        maxZoom: 16
+        maxZoom: 18
       }
     };
     this._resize = this._resize.bind(this);

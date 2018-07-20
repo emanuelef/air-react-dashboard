@@ -30,10 +30,10 @@ export default class DeckGLOverlay extends Component {
         id: "scatterplot",
         getPosition: d => d.position,
         getColor: d => colourPoint(d.altitude, 350, 1100),
-        getRadius: d => 8,
+        getRadius: d => 18,
         opacity: 0.2,
-        pickable: false,
-        radiusScale: 10,
+        pickable: true,
+        radiusScale: 1,
         radiusMinPixels: 0.25,
         radiusMaxPixels: 30,
         ...this.props
