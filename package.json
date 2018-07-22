@@ -31,6 +31,7 @@
     "react-chartjs-2": "^2.7.2",
     "react-dom": "^16.4.1",
     "react-loadable": "^5.4.0",
+    "react-location-picker": "^1.2.4",
     "react-map-gl": "^3.3.0",
     "react-plotly.js": "^2.2.0",
     "react-router-config": "^1.0.0-beta.4",

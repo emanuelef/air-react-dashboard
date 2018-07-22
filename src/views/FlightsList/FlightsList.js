@@ -14,7 +14,7 @@ import {
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 
-class FlightList extends Component {
+class FlighstList extends Component {
   constructor(props) {
     super(props);
     this.state = { flights: [] };
@@ -92,4 +92,4 @@ class FlightList extends Component {
   }
 }
 
-export default FlightList;
+export default FlighstList;

@@ -26,6 +26,8 @@ import { getStyle, hexToRgba } from "@coreui/coreui/dist/js/coreui-utilities";
 
 import PlotContainer from "./PlotContainer.js";
 
+import LocationPickerView from "./LocationPickerView.js";
+
 const brandPrimary = getStyle("--primary");
 const brandSuccess = getStyle("--success");
 const brandInfo = getStyle("--info");
@@ -509,12 +511,19 @@ class Dashboard extends Component {
     super(props);
 
     this.toggle = this.toggle.bind(this);
+    this.locationChanged = this.locationChanged.bind(this);
     this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
 
     this.state = {
       dropdownOpen: false,
-      radioSelected: 2
+      radioSelected: 2,
+      location: {lat: 51.40546628394648, lng: -0.4015247675781666}
     };
+  }
+
+  locationChanged(location) {
+    this.setState({location});
+    console.log(location);
   }
 
   toggle() {
@@ -670,6 +679,25 @@ class Dashboard extends Component {
             </Card>
           </Col>
         </Row>
+
+        <Row>
+          <Col>
+            <Card>
+              <CardBody>
+                <Row>
+                  <Col sm="5">
+                    <CardTitle className="mb-0">Flights below 1200m</CardTitle>
+                    <div className="small text-muted">Today</div>
+                  </Col>
+                  <Col sm="7" className="d-none d-sm-inline-block" />
+                </Row>
+                <LocationPickerView onLocationChanged = {this.locationChanged}/>
+              </CardBody>
+              <CardFooter />
+            </Card>
+          </Col>
+        </Row>
+
         <Row>
           <Col>
             <Card>
