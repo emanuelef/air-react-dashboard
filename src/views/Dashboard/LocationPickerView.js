@@ -2,6 +2,11 @@ import React, { Component } from "react";
 import LocationPicker from "react-location-picker";
 import axios from "axios";
 import moment from "moment";
+import momentLocalizer from "react-widgets-moment";
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
+import "react-widgets/dist/css/react-widgets.css";
+import DateTimePicker from "react-widgets/lib/DateTimePicker";
 
 /* Default position */
 const defaultPosition = {
@@ -24,35 +29,37 @@ class LocationPickerView extends Component {
         belowMaxDistance: 0,
         medianDistance: 0,
         minDistance: 0
-      }
+      },
+      currentDate: Date()
     };
 
     this.handleLocationChange = this.handleLocationChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+    this.updateStats = this.updateStats.bind(this);
   }
 
-  handleLocationChange({ position, address }) {
-    this.props.onLocationChanged(position);
-
-    let start = moment
+  updateStats() {
+    let start = moment(this.state.currentDate)
       .utc()
       .startOf("day")
       .unix();
-    let end = moment
+    let end = moment(this.state.currentDate)
       .utc()
       .endOf("day")
       .unix();
+
+    const lat = this.state.position.lat;
+    const lng = this.state.position.lng;
 
     this.setState({ status: "LOADING..." });
 
     axios
       .get(
-        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allFlightsInBox?from=${start}&to=${end}&lat=${
-          position.lat
-        }&lon=${position.lng}&max=2500&minDistance=1200&summaryOnly=1`
+        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allFlightsInBox?from=${start}&to=${end}&lat=${lat}&lon=${lng}&max=2500&minDistance=1200&summaryOnly=1`
       )
       .then(res => {
         console.log(res.data);
-        this.setState({ position, address, data: res.data, status: "OK" });
+        this.setState({ data: res.data, status: "OK" });
       })
       .catch(error => {
         console.log("ERROR");
@@ -61,10 +68,29 @@ class LocationPickerView extends Component {
       });
   }
 
+  handleDateChange(date) {
+    this.setState({ currentDate: date });
+    this.updateStats();
+  }
+
+  handleLocationChange({ position, address }) {
+    this.props.onLocationChanged(position);
+    this.setState({ position, address });
+    this.updateStats();
+  }
+
   render() {
+    moment.locale("en");
+    momentLocalizer();
+
     return (
       <div>
         <h1>{this.state.address}</h1>
+        <DateTimePicker
+          defaultValue={new Date()}
+          time={false}
+          onCurrentDateChange={this.handleDateChange}
+        />
         <div>
           <LocationPicker
             containerElement={<div style={{ height: "100%" }} />}
