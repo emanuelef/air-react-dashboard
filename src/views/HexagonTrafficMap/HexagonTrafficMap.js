@@ -2,12 +2,19 @@ import React, { Component } from "react";
 import { defaultMapStyle, pointLayer } from "../MapUtils/map-style.js";
 import axios from "axios";
 import moment from "moment";
+import momentLocalizer from "react-widgets-moment";
+
+import "react-widgets/dist/css/react-widgets.css";
+import DateTimePicker from "react-widgets/lib/DateTimePicker";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
 
 import { tooltipStyle } from "../MapUtils/style";
-import { LayerControls, SCATTERPLOT_CONTROLS } from "../MapUtils/layer-controls";
+import {
+  LayerControls,
+  SCATTERPLOT_CONTROLS
+} from "../MapUtils/layer-controls";
 
 class HexagonTrafficMap extends Component {
   constructor(props) {
@@ -28,36 +35,29 @@ class HexagonTrafficMap extends Component {
         latitude: 51.443874,
         zoom: 12,
         maxZoom: 18
-      }
+      },
+      currentDate: Date()
     };
     this._resize = this._resize.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+
+    moment.locale("en");
+    momentLocalizer();
   }
 
-  _fetchDataFlights(daysAgo = 0) {
-    let start = moment
+  _fetchDataFlights() {
+    let start = moment(this.state.currentDate)
       .utc()
-      .subtract(daysAgo, "days")
       .startOf("day")
       .unix();
-    let end = moment
+    let end = moment(this.state.currentDate)
       .utc()
-      .subtract(daysAgo, "days")
       .endOf("day")
       .unix();
-    /*     let end = moment
-    .utc()
-    .startOf("day")
-    .add(7, "hours")
-    .unix(); */
-
-    // 1531259370
-    // 1531864196
-
-    console.log(start, end);
 
     axios
       .get(
-        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/all?from=${start}&to=${end}&latLonOnly=1`
+        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allZipped?from=${start}&to=${end}&latLonOnly=1`
       )
       .then(res => {
         console.log(res.data.length);
@@ -67,6 +67,11 @@ class HexagonTrafficMap extends Component {
         console.log("ERROR");
         console.log(error);
       });
+  }
+
+  handleDateChange(date) {
+    this.setState({ currentDate: date });
+    this._fetchDataFlights();
   }
 
   componentDidMount() {
@@ -116,7 +121,7 @@ class HexagonTrafficMap extends Component {
   _updateLayerSettings(settings) {
     console.log(settings);
     this.setState({ settings });
-    this._fetchDataFlights(settings.radiusScale);
+    //this._fetchDataFlights(settings.radiusScale);
   }
 
   render() {
@@ -137,10 +142,11 @@ class HexagonTrafficMap extends Component {
             <div>{`num: ${this.state.hoveredObject.points.length}`}</div>
           </div>
         )}
-        <LayerControls
-          settings={this.state.settings}
-          propTypes={SCATTERPLOT_CONTROLS}
-          onChange={settings => this._updateLayerSettings(settings)}
+        <DateTimePicker
+          format='dddd, MMMM Do YYYY'
+          defaultValue={new Date()}
+          time={false}
+          onCurrentDateChange={this.handleDateChange}
         />
         <ReactMapGL
           {...this.state.viewport}

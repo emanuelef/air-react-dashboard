@@ -53,23 +53,23 @@ You can find the most recent version of this guide [here](https://github.com/fac
 - [Generating Dynamic `<meta>` Tags on the Server](#generating-dynamic-meta-tags-on-the-server)
 - [Pre-Rendering into Static HTML Files](#pre-rendering-into-static-html-files)
 - [Injecting Data from the Server into the Page](#injecting-data-from-the-server-into-the-page)
-- [Running Tests](#running-tests)
+- [Running AllPassagess](#running-tests)
   - [Filename Conventions](#filename-conventions)
   - [Command Line Interface](#command-line-interface)
   - [Version Control Integration](#version-control-integration)
-  - [Writing Tests](#writing-tests)
-  - [Testing Components](#testing-components)
+  - [Writing AllPassagess](#writing-tests)
+  - [AllPassagesing Components](#testing-components)
   - [Using Third Party Assertion Libraries](#using-third-party-assertion-libraries)
-  - [Initializing Test Environment](#initializing-test-environment)
-  - [Focusing and Excluding Tests](#focusing-and-excluding-tests)
+  - [Initializing AllPassages Environment](#initializing-test-environment)
+  - [Focusing and Excluding AllPassagess](#focusing-and-excluding-tests)
   - [Coverage Reporting](#coverage-reporting)
   - [Continuous Integration](#continuous-integration)
   - [Disabling jsdom](#disabling-jsdom)
-  - [Snapshot Testing](#snapshot-testing)
+  - [Snapshot AllPassagesing](#snapshot-testing)
   - [Editor Integration](#editor-integration)
-- [Debugging Tests](#debugging-tests)
-  - [Debugging Tests in Chrome](#debugging-tests-in-chrome)
-  - [Debugging Tests in Visual Studio Code](#debugging-tests-in-visual-studio-code)
+- [Debugging AllPassagess](#debugging-tests)
+  - [Debugging AllPassagess in Chrome](#debugging-tests-in-chrome)
+  - [Debugging AllPassagess in Visual Studio Code](#debugging-tests-in-visual-studio-code)
 - [Developing Components in Isolation](#developing-components-in-isolation)
   - [Getting Started with Storybook](#getting-started-with-storybook)
   - [Getting Started with Styleguidist](#getting-started-with-styleguidist)
@@ -1264,7 +1264,7 @@ Similarly to the previous section, you can leave some placeholders in the HTML t
 
 Then, on the server, you can replace `__SERVER_DATA__` with a JSON of real data right before sending the response. The client code can then read `window.SERVER_DATA` to use it. **Make sure to [sanitize the JSON before sending it to the client](https://medium.com/node-security/the-most-common-xss-vulnerability-in-react-js-applications-2bdffbcc1fa0) as it makes your app vulnerable to XSS attacks.**
 
-## Running Tests
+## Running AllPassagess
 
 >Note: this feature is available with `react-scripts@0.3.0` and higher.<br>
 >[Read the migration guide to learn how to enable it in older projects!](https://github.com/facebookincubator/create-react-app/blob/master/CHANGELOG.md#migrating-from-023-to-030)
@@ -1305,7 +1305,7 @@ Jest will always explicitly mention that it only ran tests related to the files 
 
 Jest will always run all tests on a [continuous integration](#continuous-integration) server or if the project is not inside a Git or Mercurial repository.
 
-### Writing Tests
+### Writing AllPassagess
 
 To create tests, add `it()` (or `test()`) blocks with the name of the test and its code. You may optionally wrap them in `describe()` blocks for logical grouping but this is neither required nor recommended.
 
@@ -1323,7 +1323,7 @@ it('sums numbers', () => {
 All `expect()` matchers supported by Jest are [extensively documented here](https://facebook.github.io/jest/docs/en/expect.html#content).<br>
 You can also use [`jest.fn()` and `expect(fn).toBeCalled()`](https://facebook.github.io/jest/docs/en/expect.html#tohavebeencalled) to create “spies” or mock functions.
 
-### Testing Components
+### AllPassagesing Components
 
 There is a broad spectrum of component testing techniques. They range from a “smoke test” verifying that a component renders without throwing, to shallow rendering and testing some of the output, to full rendering and testing component lifecycle and state changes.
 
@@ -1340,7 +1340,7 @@ it('renders without crashing', () => {
 });
 ```
 
-This test mounts a component and makes sure that it didn’t throw during rendering. Tests like this provide a lot of value with very little effort so they are great as a starting point, and this is the test you will find in `src/App.test.js`.
+This test mounts a component and makes sure that it didn’t throw during rendering. AllPassagess like this provide a lot of value with very little effort so they are great as a starting point, and this is the test you will find in `src/App.test.js`.
 
 When you encounter bugs caused by changing components, you will gain a deeper insight into which parts of them are worth testing in your application. This might be a good time to introduce more specific tests asserting specific expected output or behavior.
 
@@ -1360,7 +1360,7 @@ As of Enzyme 3, you will need to install Enzyme along with an Adapter correspond
 
 The adapter will also need to be configured in your [global setup file](#initializing-test-environment):
 
-#### `src/setupTests.js`
+#### `src/setupAllPassagess.js`
 ```js
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -1368,7 +1368,7 @@ import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
 ```
 
->Note: Keep in mind that if you decide to "eject" before creating `src/setupTests.js`, the resulting `package.json` file won't contain any reference to it. [Read here](#initializing-test-environment) to learn how to add this after ejecting.
+>Note: Keep in mind that if you decide to "eject" before creating `src/setupAllPassagess.js`, the resulting `package.json` file won't contain any reference to it. [Read here](#initializing-test-environment) to learn how to add this after ejecting.
 
 Now you can write a smoke test with it:
 
@@ -1422,7 +1422,7 @@ Alternatively you may use `yarn`:
 yarn add jest-enzyme
 ```
 
-Import it in [`src/setupTests.js`](#initializing-test-environment) to make its matchers available in every test:
+Import it in [`src/setupAllPassagess.js`](#initializing-test-environment) to make its matchers available in every test:
 
 ```js
 import 'jest-enzyme';
@@ -1441,15 +1441,15 @@ import { expect } from 'chai';
 
 and then use them in your tests like you normally do.
 
-### Initializing Test Environment
+### Initializing AllPassages Environment
 
 >Note: this feature is available with `react-scripts@0.4.0` and higher.
 
-If your app uses a browser API that you need to mock in your tests or if you just need a global setup before running your tests, add a `src/setupTests.js` to your project. It will be automatically executed before running your tests.
+If your app uses a browser API that you need to mock in your tests or if you just need a global setup before running your tests, add a `src/setupAllPassagess.js` to your project. It will be automatically executed before running your tests.
 
 For example:
 
-#### `src/setupTests.js`
+#### `src/setupAllPassagess.js`
 ```js
 const localStorageMock = {
   getItem: jest.fn(),
@@ -1459,16 +1459,16 @@ const localStorageMock = {
 global.localStorage = localStorageMock
 ```
 
->Note: Keep in mind that if you decide to "eject" before creating `src/setupTests.js`, the resulting `package.json` file won't contain any reference to it, so you should manually create the property `setupTestFrameworkScriptFile` in the configuration for Jest, something like the following:
+>Note: Keep in mind that if you decide to "eject" before creating `src/setupAllPassagess.js`, the resulting `package.json` file won't contain any reference to it, so you should manually create the property `setupAllPassagesFrameworkScriptFile` in the configuration for Jest, something like the following:
 
 >```js
 >"jest": {
 >   // ...
->   "setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js"
+>   "setupAllPassagesFrameworkScriptFile": "<rootDir>/src/setupAllPassagess.js"
 >  }
 >  ```
 
-### Focusing and Excluding Tests
+### Focusing and Excluding AllPassagess
 
 You can replace `it()` with `xit()` to temporarily exclude a test from being executed.<br>
 Similarly, `fit()` lets you focus on a specific test without running any other tests.
@@ -1612,17 +1612,17 @@ To help you make up your mind, here is a list of APIs that **need jsdom**:
 
 * Any browser globals like `window` and `document`
 * [`ReactDOM.render()`](https://facebook.github.io/react/docs/top-level-api.html#reactdom.render)
-* [`TestUtils.renderIntoDocument()`](https://facebook.github.io/react/docs/test-utils.html#renderintodocument) ([a shortcut](https://github.com/facebook/react/blob/34761cf9a252964abfaab6faf74d473ad95d1f21/src/test/ReactTestUtils.js#L83-L91) for the above)
+* [`AllPassagesUtils.renderIntoDocument()`](https://facebook.github.io/react/docs/test-utils.html#renderintodocument) ([a shortcut](https://github.com/facebook/react/blob/34761cf9a252964abfaab6faf74d473ad95d1f21/src/test/ReactAllPassagesUtils.js#L83-L91) for the above)
 * [`mount()`](http://airbnb.io/enzyme/docs/api/mount.html) in [Enzyme](http://airbnb.io/enzyme/index.html)
 
 In contrast, **jsdom is not needed** for the following APIs:
 
-* [`TestUtils.createRenderer()`](https://facebook.github.io/react/docs/test-utils.html#shallow-rendering) (shallow rendering)
+* [`AllPassagesUtils.createRenderer()`](https://facebook.github.io/react/docs/test-utils.html#shallow-rendering) (shallow rendering)
 * [`shallow()`](http://airbnb.io/enzyme/docs/api/shallow.html) in [Enzyme](http://airbnb.io/enzyme/index.html)
 
 Finally, jsdom is also not needed for [snapshot testing](http://facebook.github.io/jest/blog/2016/07/27/jest-14.html).
 
-### Snapshot Testing
+### Snapshot AllPassagesing
 
 Snapshot testing is a feature of Jest that automatically generates text snapshots of your components and saves them on the disk so if the UI output changes, you get notified without manually writing any assertions on the component output. [Read more about snapshot testing.](http://facebook.github.io/jest/blog/2016/07/27/jest-14.html)
 
@@ -1632,13 +1632,13 @@ If you use [Visual Studio Code](https://code.visualstudio.com), there is a [Jest
 
 ![VS Code Jest Preview](https://cloud.githubusercontent.com/assets/49038/20795349/a032308a-b7c8-11e6-9b34-7eeac781003f.png)
 
-## Debugging Tests
+## Debugging AllPassagess
 
 There are various ways to setup a debugger for your Jest tests. We cover debugging in Chrome and [Visual Studio Code](https://code.visualstudio.com/).
 
 >Note: debugging tests requires Node 8 or higher.
 
-### Debugging Tests in Chrome
+### Debugging AllPassagess in Chrome
 
 Add the following to the `scripts` section in your project's `package.json`
 ```json
@@ -1662,7 +1662,7 @@ After opening that link, the Chrome Developer Tools will be displayed. Select `i
 
 >Note: the --runInBand cli option makes sure Jest runs test in the same process rather than spawning processes for individual tests. Normally Jest parallelizes test runs across processes but it is hard to debug many processes at the same time.
 
-### Debugging Tests in Visual Studio Code
+### Debugging AllPassagess in Visual Studio Code
 
 Debugging Jest tests is supported out of the box for [Visual Studio Code](https://code.visualstudio.com).
 
@@ -1672,7 +1672,7 @@ Use the following [`launch.json`](https://code.visualstudio.com/docs/editor/debu
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug CRA Tests",
+      "name": "Debug CRA AllPassagess",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",      
@@ -1731,7 +1731,7 @@ Learn more about React Storybook:
 * Screencast: [Getting Started with React Storybook](https://egghead.io/lessons/react-getting-started-with-react-storybook)
 * [GitHub Repo](https://github.com/storybooks/storybook)
 * [Documentation](https://storybook.js.org/basics/introduction/)
-* [Snapshot Testing UI](https://github.com/storybooks/storybook/tree/master/addons/storyshots) with Storybook + addon/storyshot
+* [Snapshot AllPassagesing UI](https://github.com/storybooks/storybook/tree/master/addons/storyshots) with Storybook + addon/storyshot
 
 ### Getting Started with Styleguidist
 

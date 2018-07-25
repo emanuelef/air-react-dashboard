@@ -3,8 +3,6 @@ import LocationPicker from "react-location-picker";
 import axios from "axios";
 import moment from "moment";
 import momentLocalizer from "react-widgets-moment";
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css"; // theme css file
 import "react-widgets/dist/css/react-widgets.css";
 import DateTimePicker from "react-widgets/lib/DateTimePicker";
 
@@ -35,7 +33,10 @@ class LocationPickerView extends Component {
 
     this.handleLocationChange = this.handleLocationChange.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
-    this.updateStats = this.updateStats.bind(this);
+    //this.updateStats = this.updateStats.bind(this);
+
+    moment.locale("en");
+    momentLocalizer();
   }
 
   updateStats() {
@@ -80,13 +81,11 @@ class LocationPickerView extends Component {
   }
 
   render() {
-    moment.locale("en");
-    momentLocalizer();
-
     return (
       <div>
         <h1>{this.state.address}</h1>
         <DateTimePicker
+          format='D MMMM YY'
           defaultValue={new Date()}
           time={false}
           onCurrentDateChange={this.handleDateChange}

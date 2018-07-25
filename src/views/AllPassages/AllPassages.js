@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
 import moment from "moment";
+import momentLocalizer from "react-widgets-moment";
+
+import "react-widgets/dist/css/react-widgets.css";
+import DateTimePicker from "react-widgets/lib/DateTimePicker";
 
 import ReactMapGL from "react-map-gl";
 import DeckGLOverlay from "./deckgl-overlay";
@@ -9,7 +13,7 @@ import { tooltipStyle } from "../MapUtils/style";
 
 const MAPBOX_STYLE = "mapbox://styles/mapbox/dark-v9";
 
-class Test extends Component {
+class AllPassages extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -21,26 +25,39 @@ class Test extends Component {
         latitude: 51.444,
         zoom: 11,
         maxZoom: 18
-      }
+      },
+      currentDate: Date()
     };
     this._resize = this._resize.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+
+    moment.locale("en");
+    momentLocalizer();
   }
 
   componentDidMount() {
     window.addEventListener("resize", this._resize);
+    this.updatePassages();
+    this._resize();
+  }
 
-    let start = moment
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._resize);
+  }
+
+  updatePassages() {
+    let start = moment(this.state.currentDate)
       .utc()
       .startOf("day")
       .unix();
-    let end = moment
+    let end = moment(this.state.currentDate)
       .utc()
       .endOf("day")
       .unix();
 
     axios
       .get(
-        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/all?from=${start}&to=${end}&latLonOnly=1`
+        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allZipped?from=${start}&to=${end}&latLonOnly=1`
       )
       .then(res => {
         console.log(res.data);
@@ -50,13 +67,11 @@ class Test extends Component {
         console.log("ERROR");
         console.log(error);
       });
-
-    //this._processData();
-    this._resize();
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this._resize);
+  handleDateChange(date) {
+    this.setState({ currentDate: date });
+    this.updatePassages();
   }
 
   _processDataFlights(flights) {
@@ -106,9 +121,15 @@ class Test extends Component {
                 5}px)`
             }}
           >
-            <div>{JSON.stringify(this.state.hoveredObject)}</div>
+            <div>{`${this.state.hoveredObject.altitude}m`}</div>
           </div>
         )}
+        <DateTimePicker
+          format='D MMMM YYYY'
+          defaultValue={new Date()}
+          time={false}
+          onCurrentDateChange={this.handleDateChange}
+        />
         <ReactMapGL
           {...this.state.viewport}
           mapStyle={MAPBOX_STYLE}
@@ -128,4 +149,4 @@ class Test extends Component {
   }
 }
 
-export default Test;
+export default AllPassages;

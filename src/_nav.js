@@ -6,7 +6,7 @@ export default {
       icon: "icon-speedometer"
     },
     {
-      name: "Test",
+      name: "AllPassages",
       url: "/test",
       icon: "icon-pie-chart"
     },

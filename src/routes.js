@@ -7,8 +7,8 @@ function Loading() {
   return <div>Loading...</div>;
 }
 
-const Test = Loadable({
-  loader: () => import('./views/Test'),
+const AllPassages = Loadable({
+  loader: () => import('./views/AllPassages'),
   loading: Loading,
 });
 
@@ -31,7 +31,7 @@ const Dashboard = Loadable({
 const routes = [
   { path: '/', exact: true, name: 'Home', component: DefaultLayout },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/test', name: 'Test', component: Test },
+  { path: '/test', name: 'AllPassages', component: AllPassages },
   { path: '/hexagonTrafficMap', name: 'HexagonTrafficMap', component: HexagonTrafficMap },
   { path: '/flightsList', name: 'FlightsList', component: FlightsList }
 ];
