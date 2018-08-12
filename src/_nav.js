@@ -19,6 +19,11 @@ export default {
       name: "FlightsList",
       url: "/flightsList",
       icon: "icon-list"
+    },
+    {
+      name: "OperationsStats",
+      url: "/operationsStats",
+      icon: "icon-list"
     }
   ]
 };

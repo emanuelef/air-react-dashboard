@@ -3,7 +3,6 @@ import LocationPicker from "react-location-picker";
 import axios from "axios";
 import moment from "moment";
 import momentLocalizer from "react-widgets-moment";
-import "react-widgets/dist/css/react-widgets.css";
 import DateTimePicker from "react-widgets/lib/DateTimePicker";
 
 /* Default position */

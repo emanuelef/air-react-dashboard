@@ -14,6 +14,20 @@ import {
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+
+const Papa = require("papaparse/papaparse.min.js");
+
+const options = {
+  title: {
+    text: 'My chart'
+  },
+  series: [{
+    data: [1, 2, 3]
+  }]
+}
+
 class FlighstList extends Component {
   constructor(props) {
     super(props);
@@ -36,6 +50,15 @@ class FlighstList extends Component {
     .startOf("day")
     .add(7, "hours")
     .unix(); */
+
+    // 
+
+    Papa.parse('https://s3.eu-west-2.amazonaws.com/operations-lhr-csv/rows.csv', {
+      download: true,
+      complete: function(results) {
+        console.log(results);
+      }
+    });
 
     console.log(start, end);
 
@@ -64,7 +87,15 @@ class FlighstList extends Component {
 
   render() {
     return (
+
       <div>
+              <div>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={options}
+      />
+    </div>
+    
         {this.state.flights.map(flight => (
           <Row key={flight.id}>
             <Col>
