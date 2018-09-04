@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import moment from "moment";
+import momentLocalizer from "react-widgets-moment";
 import {
   Badge,
   Card,
@@ -19,6 +20,8 @@ import * as ss from "simple-statistics";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
+import DateTimePicker from "react-widgets/lib/DateTimePicker";
+
 const Papa = require("papaparse/papaparse.min.js");
 
 Number.prototype.pad = function(size) {
@@ -34,27 +37,36 @@ const hoursLabels = [...Array(24).keys()].map(val => (val + 1).pad(2) + ":00");
 class FlighstList extends Component {
   constructor(props) {
     super(props);
-    this.state = { flights: [], options: {} };
+    this.handleDateChange = this.handleDateChange.bind(this);
+    this.state = {
+      flights: [],
+      options: {},
+      currentDate: moment()
+        .add(-1, "days")
+        .toDate()
+    };
+    moment.locale("en");
+    momentLocalizer();
   }
 
-  _fetchDataFlights(daysAgo = 0) {
-    let start = moment
+  handleDateChange(date) {
+    this._fetchDataFlights(date);
+  }
+
+  _fetchDataFlights(date) {
+    date = date || this.state.currentDate;
+
+    let start = moment(date)
       .utc()
-      .subtract(daysAgo, "days")
-      .startOf("day")
-      .unix();
-    let end = moment
-      .utc()
-      .subtract(daysAgo, "days")
       .endOf("day")
       .unix();
-    /*     let end = moment
-    .utc()
-    .startOf("day")
-    .add(7, "hours")
-    .unix(); */
+    let end = moment(date)
+      .utc()
+      .add(1, "d")
+      .endOf("day")
+      .unix();
 
-    //
+    this.setState({ currentDate: date });
 
     Papa.parse(
       "https://s3.eu-west-2.amazonaws.com/operations-lhr-csv/rows.csv",
@@ -90,12 +102,8 @@ class FlighstList extends Component {
         for (let bin of bins) {
           numFlights.push(bin.length);
           const distances = bin.map(fl => fl.minDistance);
-          medianDistances.push(
-            bin.length ? ss.median(distances) : 0
-          );
-          minDistances.push(
-            bin.length ? ss.min(distances) : 0
-          );
+          medianDistances.push(bin.length ? ss.median(distances) : 0);
+          minDistances.push(bin.length ? ss.min(distances) : 0);
         }
 
         const optionsData = {
@@ -218,6 +226,12 @@ class FlighstList extends Component {
         <Col>
           <Card>
             <div>
+              <DateTimePicker
+                format="D MMMM YYYY"
+                defaultValue={new Date()}
+                time={false}
+                onCurrentDateChange={this.handleDateChange}
+              />
               <HighchartsReact
                 highcharts={Highcharts}
                 options={this.state.options}
