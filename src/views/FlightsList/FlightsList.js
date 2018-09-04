@@ -14,24 +14,27 @@ import {
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
+import * as ss from "simple-statistics";
+
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 const Papa = require("papaparse/papaparse.min.js");
 
-const options = {
-  title: {
-    text: 'My chart'
-  },
-  series: [{
-    data: [1, 2, 3]
-  }]
-}
+Number.prototype.pad = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {
+    s = "0" + s;
+  }
+  return s;
+};
+
+const hoursLabels = [...Array(24).keys()].map(val => (val + 1).pad(2) + ":00");
 
 class FlighstList extends Component {
   constructor(props) {
     super(props);
-    this.state = { flights: [] };
+    this.state = { flights: [], options: {} };
   }
 
   _fetchDataFlights(daysAgo = 0) {
@@ -51,14 +54,17 @@ class FlighstList extends Component {
     .add(7, "hours")
     .unix(); */
 
-    // 
+    //
 
-    Papa.parse('https://s3.eu-west-2.amazonaws.com/operations-lhr-csv/rows.csv', {
-      download: true,
-      complete: function(results) {
-        console.log(results);
+    Papa.parse(
+      "https://s3.eu-west-2.amazonaws.com/operations-lhr-csv/rows.csv",
+      {
+        download: true,
+        complete: function(results) {
+          console.log(results);
+        }
       }
-    });
+    );
 
     console.log(start, end);
 
@@ -67,9 +73,130 @@ class FlighstList extends Component {
         `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/flights?from=${start}&to=${end}`
       )
       .then(res => {
-        console.log(res.data.length);
+        let flightsBelowDistance = res.data
+          .filter(fl => fl.minDistance < 1200)
+          .sort((a, b) => a.minDTimestamp - b.minDTimestamp);
+
+        const bins = [...Array(24).keys()].map(val => []);
+        for (let fl of flightsBelowDistance) {
+          let binIndex = Math.floor((fl.minDTimestamp - start) / 60 / 60);
+          bins[binIndex].push(fl);
+        }
+
+        let numFlights = [];
+        let medianDistances = [];
+        let minDistances = [];
+
+        for (let bin of bins) {
+          numFlights.push(bin.length);
+          const distances = bin.map(fl => fl.minDistance);
+          medianDistances.push(
+            bin.length ? ss.median(distances) : 0
+          );
+          minDistances.push(
+            bin.length ? ss.min(distances) : 0
+          );
+        }
+
+        const optionsData = {
+          chart: {
+            zoomType: "xy"
+          },
+          title: {
+            text: "Daily Flights and Median distance"
+          },
+          subtitle: {
+            text: "Counted flights less than 1200m"
+          },
+          xAxis: [
+            {
+              categories: hoursLabels,
+              crosshair: true
+            }
+          ],
+          yAxis: [
+            {
+              // Primary yAxis
+              labels: {
+                format: "{value}m",
+                style: {
+                  color: Highcharts.getOptions().colors[1]
+                }
+              },
+              title: {
+                text: "Median distance",
+                style: {
+                  color: Highcharts.getOptions().colors[1]
+                }
+              }
+            },
+            {
+              // Secondary yAxis
+              title: {
+                text: "Flights below 1200m",
+                style: {
+                  color: Highcharts.getOptions().colors[0]
+                }
+              },
+              labels: {
+                format: "{value}",
+                style: {
+                  color: Highcharts.getOptions().colors[0]
+                }
+              },
+              opposite: true
+            }
+          ],
+          tooltip: {
+            shared: true
+          },
+          legend: {
+            layout: "vertical",
+            align: "left",
+            x: 60,
+            verticalAlign: "top",
+            y: 10,
+            floating: true,
+            backgroundColor:
+              (Highcharts.theme && Highcharts.theme.legendBackgroundColor) ||
+              "#FFFFFF"
+          },
+          series: [
+            {
+              name: "Flights",
+              type: "column",
+              yAxis: 1,
+              pointWidth: 25,
+              animation: false,
+              data: numFlights,
+              tooltip: {
+                valueSuffix: ""
+              }
+            },
+            {
+              name: "Median distance",
+              type: "spline",
+              animation: false,
+              data: medianDistances,
+              tooltip: {
+                valueSuffix: "m"
+              }
+            },
+            {
+              name: "Min distance",
+              type: "spline",
+              animation: false,
+              data: minDistances,
+              tooltip: {
+                valueSuffix: "m"
+              }
+            }
+          ]
+        };
+
         this.setState({
           flights: res.data.sort((a, b) => b.minDTimestamp - a.minDTimestamp),
+          options: optionsData,
           status: "READY"
         });
       })
@@ -87,15 +214,18 @@ class FlighstList extends Component {
 
   render() {
     return (
-
       <div>
-              <div>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-      />
-    </div>
-    
+        <Col>
+          <Card>
+            <div>
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={this.state.options}
+              />
+            </div>
+          </Card>
+        </Col>
+
         {this.state.flights.map(flight => (
           <Row key={flight.id}>
             <Col>

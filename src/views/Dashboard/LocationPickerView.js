@@ -55,7 +55,9 @@ class LocationPickerView extends Component {
 
     axios
       .get(
-        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allFlightsInBox?from=${start}&to=${end}&lat=${lat}&lon=${lng}&max=2500&minDistance=1200&summaryOnly=1`
+        `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allFlightsInBox?from=${start}&to=${end}&lat=${lat}&lon=${lng}&max=2500&minDistance=1200&summaryOnly=1`, {
+          timeout: 10000
+        }
       )
       .then(res => {
         console.log(res.data);

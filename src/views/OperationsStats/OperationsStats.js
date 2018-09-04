@@ -132,7 +132,8 @@ class OperationsStats extends Component {
       chart: {
         plotBackgroundColor: null,
         plotBorderWidth: 0,
-        plotShadow: false
+        plotShadow: false,
+        animation: false
       },
       title: {
         text: "LHR Operations",
@@ -151,16 +152,19 @@ class OperationsStats extends Component {
             style: {
               fontWeight: "bold",
               color: "white"
-            }
+            },
+            allowOverlap: true
           },
           startAngle: -90,
           endAngle: 90,
-          center: ["50%", "75%"]
+          center: ["50%", "75%"],
+          animation: false
         }
       },
       series: [
         {
           type: "pie",
+          animation: false,
           name: "Operations",
           innerSize: "50%",
           data: [["Westerly", westOpsPerc], ["Easterly", eastOpsPerc]]

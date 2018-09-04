@@ -26,7 +26,8 @@ class AllPassages extends Component {
         zoom: 11,
         maxZoom: 18
       },
-      currentDate: Date()
+      loadingPointsState: "Initializing...",
+      currentDate: moment().add(-1, 'days').toDate()
     };
     this._resize = this._resize.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -45,33 +46,45 @@ class AllPassages extends Component {
     window.removeEventListener("resize", this._resize);
   }
 
-  updatePassages() {
-    let start = moment(this.state.currentDate)
-      .utc()
-      .startOf("day")
-      .unix();
-    let end = moment(this.state.currentDate)
+  updatePassages(date) {
+
+    date = date || this.state.currentDate;
+
+    let start = moment(date)
       .utc()
       .endOf("day")
       .unix();
+    let end = moment(date)
+      .utc()
+      .add(1, 'd')
+      .endOf("day")
+      .unix();
+
+    this.setState({ currentDate: date });
+    this.setState({ loadingPointsState: "Fetching data..." });
 
     axios
       .get(
         `https://q4yitwm037.execute-api.eu-west-2.amazonaws.com/dev/allZipped?from=${start}&to=${end}&latLonOnly=1`
       )
       .then(res => {
-        console.log(res.data);
+        //console.log(res.data);
         this._processDataFlights(res.data);
+        this.setState({
+          loadingPointsState: `Retrieved ${res.data.length} points ${new Date(
+            start * 1000
+          )} - ${new Date(end * 1000)}`
+        });
       })
       .catch(error => {
         console.log("ERROR");
         console.log(error);
+        this.setState({ loadingPointsState: "Error while fetching data" });
       });
   }
 
   handleDateChange(date) {
-    this.setState({ currentDate: date });
-    this.updatePassages();
+    this.updatePassages(date);
   }
 
   _processDataFlights(flights) {
@@ -125,11 +138,14 @@ class AllPassages extends Component {
           </div>
         )}
         <DateTimePicker
-          format='D MMMM YYYY'
+          format="D MMMM YYYY"
           defaultValue={new Date()}
           time={false}
           onCurrentDateChange={this.handleDateChange}
         />
+        <div style={{ marginLeft: "12px" }}>{`${
+          this.state.loadingPointsState
+        }`}</div>
         <ReactMapGL
           {...this.state.viewport}
           mapStyle={MAPBOX_STYLE}
