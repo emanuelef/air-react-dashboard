@@ -228,7 +228,7 @@ class OperationsStats extends Component {
               time={false}
               onCurrentDateChange={this.handleStartDateChange}
               min={new Date(2015, 0, 1)}
-              max={new Date(2018, 6, 21)}
+              max={new Date(2018, 9, 14)}
             />
             <DateTimePicker
               format="D MMMM YY"
@@ -236,7 +236,7 @@ class OperationsStats extends Component {
               time={false}
               onCurrentDateChange={this.handleEndDateChange}
               min={new Date(2015, 0, 1)}
-              max={new Date(2018, 6, 21)}
+              max={new Date(2018, 9, 14)}
             />
             <HighchartsReact
               highcharts={Highcharts}
