@@ -22,7 +22,7 @@
     "enzyme-adapter-react-16": "^1.1.1",
     "font-awesome": "^4.7.0",
     "highcharts": "^6.1.2",
-    "highcharts-react-official": "^1.4.0",
+    "highcharts-react-official": "^2.0.0",
     "immutable": "^3.8.2",
     "luma.gl": "^4.0.1",
     "moment": "^2.22.2",
